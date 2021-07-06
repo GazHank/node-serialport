@@ -10,8 +10,8 @@ updates:
     schedule:
       interval: "daily"
     allow:
-      # Allow updates for node-abi
-      - dependency-name: "node-abi"
+      # Allow updates for directly referenced packages
+      - dependency-type: "direct"
     # Prefix all commit messages with "Composer"
     # include a list of updated dependencies
     commit-message:
