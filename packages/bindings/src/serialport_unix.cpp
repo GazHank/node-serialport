@@ -359,6 +359,43 @@ void EIO_Set(uv_work_t* req) {
     return;
 }
   #endif
+
+  // Get port configuration for modification
+  struct termios options;
+  tcgetattr(fd, &options);
+    switch (data->parity) {
+  case SERIALPORT_PARITY_NONE:
+    options.c_cflag &= ~PARENB;
+    // options.c_cflag &= ~CSTOPB;
+    // options.c_cflag &= ~CSIZE;
+    // options.c_cflag |= CS8;
+    break;
+  case SERIALPORT_PARITY_ODD:
+    options.c_cflag |= PARENB;
+    options.c_cflag |= PARODD;
+    // options.c_cflag &= ~CSTOPB;
+    // options.c_cflag &= ~CSIZE;
+    // options.c_cflag |= CS7;
+    break;
+  case SERIALPORT_PARITY_EVEN:
+    options.c_cflag |= PARENB;
+    options.c_cflag &= ~PARODD;
+    // options.c_cflag &= ~CSTOPB;
+    // options.c_cflag &= ~CSIZE;
+    // options.c_cflag |= CS7;
+    break;
+  default:
+    snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
+    return -1;
+  }
+  
+  // Note that tcsetattr() returns success if any of the requested changes could be successfully carried out.
+  // Therefore, when making multiple changes it may be necessary to follow this call with a further call to
+  // tcgetattr() to check that all changes have been performed successfully.
+  // This also fails on OSX
+  //
+  // TCSADRAIN used to allow any pending data to be sent before the update
+  tcsetattr(fd, TCSADRAIN, &options);
 }
 
 void EIO_Get(uv_work_t* req) {
@@ -384,6 +421,19 @@ void EIO_Get(uv_work_t* req) {
   #else
   data->lowLatency = false;
   #endif
+
+  // Get port configuration for return
+  struct termios options;
+  tcgetattr(fd, &options);
+  if (options.c_cflag & PARODD) {
+    data->parity = SERIALPORT_PARITY_ODD;
+  } else {
+    if (options.c_cflag & PARENB) {
+        data->parity = SERIALPORT_PARITY_EVEN;
+    } else {
+        data->parity = SERIALPORT_PARITY_NONE;
+    }
+  }
 }
 
 void EIO_GetBaudRate(uv_work_t* req) {
