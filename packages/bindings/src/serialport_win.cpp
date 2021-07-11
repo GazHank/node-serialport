@@ -252,6 +252,37 @@ void EIO_Set(uv_work_t* req) {
     ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
     return;
   }
+
+  DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
+  dcb.DCBlength = sizeof(DCB);
+  if (!GetCommState(int2handle(data->fd), &dcb)) {
+    ErrorCodeToString("Getting control settings on COM port (GetCommState)", GetLastError(), data->errorString);
+    return;
+  }
+
+  switch (data->parity) {
+  case SERIALPORT_PARITY_NONE:
+    dcb.Parity = NOPARITY;
+    break;
+  case SERIALPORT_PARITY_MARK:
+    dcb.Parity = MARKPARITY;
+    break;
+  case SERIALPORT_PARITY_EVEN:
+    dcb.Parity = EVENPARITY;
+    break;
+  case SERIALPORT_PARITY_ODD:
+    dcb.Parity = ODDPARITY;
+    break;
+  case SERIALPORT_PARITY_SPACE:
+    dcb.Parity = SPACEPARITY;
+    break;
+  }
+
+  if (!SetCommState(int2handle(data->fd), &dcb)) {
+    ErrorCodeToString("Setting control settings on COM port (SetCommState)", GetLastError(), data->errorString);
+    return;
+  }
 }
 
 void EIO_Get(uv_work_t* req) {
@@ -266,6 +297,31 @@ void EIO_Get(uv_work_t* req) {
   data->cts = bits & MS_CTS_ON;
   data->dsr = bits & MS_DSR_ON;
   data->dcd = bits & MS_RLSD_ON;
+
+  DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
+  dcb.DCBlength = sizeof(DCB);
+  if (!GetCommState(int2handle(data->fd), &dcb)) {
+    ErrorCodeToString("Getting control settings on COM port (GetCommState)", GetLastError(), data->errorString);
+    return;
+  }
+  switch (dcb.Parity) {
+  case NOPARITY:
+    data->parity = SERIALPORT_PARITY_NONE;
+    break;
+  case MARKPARITY:
+    data->parity = SERIALPORT_PARITY_NONE ;
+    break;
+  case EVENPARITY:
+    data->parity = SERIALPORT_PARITY_EVEN;
+    break;
+  case ODDPARITY:
+    data->parity = SERIALPORT_PARITY_ODD;
+    break;
+  case SPACEPARITY:
+    data->parity = SERIALPORT_PARITY_SPACE;
+    break;
+  }
 }
 
 void EIO_GetBaudRate(uv_work_t* req) {
