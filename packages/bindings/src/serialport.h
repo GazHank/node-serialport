@@ -113,6 +113,7 @@ struct SetBaton : public Nan::AsyncResource {
   bool dsr = false;
   bool brk = false;
   bool lowLatency = false;
+  SerialPortParity parity = SERIALPORT_PARITY_NONE;
 };
 
 struct GetBaton : public Nan::AsyncResource {
@@ -124,6 +125,7 @@ struct GetBaton : public Nan::AsyncResource {
   bool dsr = false;
   bool dcd = false;
   bool lowLatency = false;
+  SerialPortParity parity = SERIALPORT_PARITY_NONE;
 };
 
 struct GetBaudRateBaton : public Nan::AsyncResource {

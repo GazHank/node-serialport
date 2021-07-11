@@ -265,6 +265,7 @@ NAN_METHOD(Set) {
   baton->dtr = getBoolFromObject(options, "dtr");
   baton->dsr = getBoolFromObject(options, "dsr");
   baton->lowLatency = getBoolFromObject(options, "lowLatency");
+  baton->parity = ToParityEnum(getStringFromObj(options, "parity"));
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
@@ -309,6 +310,7 @@ NAN_METHOD(Get) {
   baton->dsr = false;
   baton->dcd = false;
   baton->lowLatency = false;
+  baton->parity = SERIALPORT_PARITY_NONE;
   baton->callback.Reset(info[1].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
@@ -332,6 +334,7 @@ void EIO_AfterGet(uv_work_t* req) {
     Nan::Set(results, Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
     Nan::Set(results, Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->dcd));
     Nan::Set(results, Nan::New<v8::String>("lowLatency").ToLocalChecked(), Nan::New<v8::Boolean>(data->lowLatency));
+    Nan::Set(results, Nan::New<v8::String>("parity").ToLocalChecked(), Nan::New<v8::Int32>(data->parity));
 
     argv[0] = Nan::Null();
     argv[1] = results;

@@ -156,6 +156,7 @@ The in progress writes must error when the port is closed with an error object t
    * @param {Boolean} [options.dtr=true] flag for dtr
    * @param {Boolean} [options.rts=true] flag for rts
    * @param {Boolean} [options.lowLatency=false] flag for lowLatency mode on Linux
+   * @param {Boolean} [options.parity=none] flag for parity
    * @returns {Promise} Resolves once the port's flags are set.
    * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
