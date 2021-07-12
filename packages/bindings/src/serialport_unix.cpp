@@ -410,7 +410,7 @@ void EIO_Set(uv_work_t* req) {
   // This also fails on OSX
   //
   // TCSADRAIN used to allow any pending data to be sent before the update
-  tcsetattr(data->fd, TCSADRAIN, &options);
+  tcsetattr(data->fd, TCSANOW, &options);
 }
 
 void EIO_Get(uv_work_t* req) {
@@ -441,10 +441,26 @@ void EIO_Get(uv_work_t* req) {
   struct termios options;
   tcgetattr(data->fd, &options);
   if (options.c_cflag & PARODD) {
+    #if defined(CMSPAR)
+    if (options.c_cflag & CMSPAR) {
+      data->parity = SERIALPORT_PARITY_MARK;
+    } else {
+      data->parity = SERIALPORT_PARITY_ODD;
+    }
+    #else
     data->parity = SERIALPORT_PARITY_ODD;
+    #endif
   } else {
     if (options.c_cflag & PARENB) {
+        #if defined(CMSPAR)        
+        if (options.c_cflag & CMSPAR) {
+          data->parity = SERIALPORT_PARITY_SPACE;
+        } else {
+          data->parity = SERIALPORT_PARITY_EVEN;
+        }
+        #else
         data->parity = SERIALPORT_PARITY_EVEN;
+        #endif
     } else {
         data->parity = SERIALPORT_PARITY_NONE;
     }
