@@ -235,6 +235,15 @@ int setup(int fd, OpenBaton *data) {
     // options.c_cflag &= ~CSIZE;
     // options.c_cflag |= CS7;
     break;
+  #if defined(CMSPAR)
+  case SERIALPORT_PARITY_SPACE:
+    options.c_cflag |= PARENB | CMSPAR;
+    options.c_cflag &= ~PARODD;
+    break;
+  case SERIALPORT_PARITY_MARK:
+    options.c_cflag |= PARENB | CMSPAR | PARODD;
+    break;
+  #endif
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
     return -1;
@@ -363,7 +372,7 @@ void EIO_Set(uv_work_t* req) {
   // Get port configuration for modification
   struct termios options;
   tcgetattr(data->fd, &options);
-    switch (data->parity) {
+  switch (data->parity) {
   case SERIALPORT_PARITY_NONE:
     options.c_cflag &= ~PARENB;
     // options.c_cflag &= ~CSTOPB;
@@ -384,6 +393,15 @@ void EIO_Set(uv_work_t* req) {
     // options.c_cflag &= ~CSIZE;
     // options.c_cflag |= CS7;
     break;
+  #if defined(CMSPAR)
+  case SERIALPORT_PARITY_SPACE:
+    options.c_cflag |= PARENB | CMSPAR;
+    options.c_cflag &= ~PARODD;
+    break;
+  case SERIALPORT_PARITY_MARK:
+    options.c_cflag |= PARENB | CMSPAR | PARODD;
+    break;
+  #endif
   }
   
   // Note that tcsetattr() returns success if any of the requested changes could be successfully carried out.
