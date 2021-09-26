@@ -55,8 +55,7 @@
     "@serialport/parser-ready": "9.2.4",
     "@serialport/parser-regex": "9.2.4",
     "@serialport/stream": "9.2.4",
-    "debug": "^4.3.2",
-    "node-addon-api": "4.0.0"
+    "debug": "^4.3.2"
   },
   "engines": {
     "node": ">=10.0.0"

@@ -6,7 +6,6 @@
     "serialport-repl": "./lib/index.js"
   },
   "dependencies": {
-    "node-addon-api": "4.0.0",
     "promirepl": "^2.0.1",
     "serialport": "9.2.4"
   },
