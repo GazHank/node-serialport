@@ -24,7 +24,7 @@
     "install": "node-gyp-build",
     "lint": "cc --verbose",
     "prebuild": "prebuildify --napi --strip --verbose --tag-prefix @serialport/bindings@",
-    "rebuild": "node-gyp-build"
+    "rebuild": "node-gyp build"
   },
   "publishConfig": {
     "access": "public"
