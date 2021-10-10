@@ -10,8 +10,8 @@
     "@serialport/parser-readline": "9.2.4",
     "bindings": "^1.5.0",
     "debug": "^4.3.2",
-    "prebuild-install": "^6.1.4",
-    "node-addon-api": "4.2.0"
+    "node-addon-api": "4.2.0",
+    "node-gyp-build": "^4.3.0"
   },
   "devDependencies": {
     "@serialport/binding-mock": "9.2.4",
@@ -21,9 +21,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "install": "prebuild-install --tag-prefix @serialport/bindings@ --runtime napi --target 4 --verbose || node-gyp rebuild",
+    "install": "node-gyp-build",
     "lint": "cc --verbose",
-    "prebuild": "prebuild --runtime napi --target 4 --force --strip --verbose --tag-prefix @serialport/bindings@",
+    "prebuild": "prebuildify --napi --strip --verbose --tag-prefix @serialport/bindings@",
     "rebuild": "node-gyp rebuild"
   },
   "publishConfig": {
